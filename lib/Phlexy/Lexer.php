@@ -13,6 +13,7 @@ class Phlexy_Lexer {
         $tokens = array();
 
         $offset = 0;
+        $line = 1;
         while (isset($string[$offset])) {
             if (!preg_match($this->regex, $string, $matches, 0, $offset)) {
                 throw new Phlexy_LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
@@ -21,9 +22,10 @@ class Phlexy_Lexer {
             // find the first non-empty element (but skipping $matches[0]) using a quick for loop
             for ($i = 1; '' === $matches[$i]; ++$i);
 
-            $tokens[] = array($matches[0], $this->offsetToToken[$i - 1]);
+            $tokens[] = array($matches[0], $this->offsetToToken[$i - 1], $line);
 
             $offset += strlen($matches[0]);
+            $line += substr_count("\n", $matches[0]);
         }
 
         return $tokens;

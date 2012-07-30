@@ -5,7 +5,7 @@ class Phlexy_Lexer {
     protected $offsetToToken;
 
     public function __construct(array $tokenMap) {
-        $this->regex = '((' . implode(')|(', array_keys($tokenMap)) . '))A';
+        $this->regex = '~(' . str_replace('~', '\~', implode(')|(', array_keys($tokenMap))) . ')~A';
         $this->offsetToToken = array_values($tokenMap);
     }
 

@@ -32,8 +32,7 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                     '\r\n?|\n'                       => 3,
                 ),
                 array(
-                    'Field,Another Field,"comma -> , <- comma","quote -> \" <- quote"' =>
-                    array(
+                    'Field,Another Field,"comma -> , <- comma","quote -> \" <- quote"' => array(
                         array('Field', 0),
                         array(',', 2),
                         array('Another Field', 0),
@@ -42,8 +41,7 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                         array(',', 2),
                         array('"quote -> \" <- quote"', 1),
                     ),
-                    "Field1.1,Field1.2\nField2.1,Field2.2" =>
-                    array(
+                    "Field1.1,Field1.2\nField2.1,Field2.2" => array(
                         array('Field1.1', 0),
                         array(',', 2),
                         array('Field1.2', 0),
@@ -51,6 +49,17 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                         array('Field2.1', 0),
                         array(',', 2),
                         array('Field2.2', 0),
+                    ),
+                )
+            ),
+            // Make sure delimiter is escaped properly
+            array(
+                array(
+                    '~' => 0,
+                ),
+                array(
+                    '~' => array(
+                        array('~', 0)
                     ),
                 )
             ),

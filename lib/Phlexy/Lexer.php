@@ -6,7 +6,14 @@ class Phlexy_Lexer {
 
     public function __construct(array $tokenMap) {
         $this->regex = '~(' . str_replace('~', '\~', implode(')|(', array_keys($tokenMap))) . ')~A';
-        $this->offsetToToken = array_values($tokenMap);
+
+        $this->offsetToToken = array();
+        $currentOffset = 0;
+        foreach ($tokenMap as $regex => $token) {
+            $this->offsetToToken[$currentOffset] = $token;
+
+            $currentOffset += 1 + preg_match_all('~\((?!\?:)~', $regex, $dummyVar);
+        }
     }
 
     public function lex($string) {

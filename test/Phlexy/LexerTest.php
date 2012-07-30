@@ -63,6 +63,18 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                     ),
                 )
             ),
+            array(
+                array(
+                    '(foo)'    => 0,
+                    'bar(baz)' => 1,
+                ),
+                array(
+                    'foobarbaz' => array(
+                        array('foo', 0, 1),
+                        array('barbaz', 1, 1),
+                    ),
+                ),
+            ),
         );
     }
 

@@ -65,8 +65,24 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
             ),
             array(
                 array(
-                    '(foo)'    => 0,
-                    'bar(baz)' => 1,
+                    'x[\](]'    => -16,
+                    'x[(]'      => -15,
+                    'x(*FAIL)'  => -14,
+                    'x(?(1)n)'  => -13,
+                    "x(?'l'm)"  => -12,
+                    'x(?P<j>k)' => -11,
+                    'x(?<h>i)'  => -10,
+                    'x(?P>j)'   => -9,
+                    'x(?&h)'    => -8,
+                    'x(?#g)'    => -7,
+                    'x(?>f)'    => -6,
+                    '(?<=e)x'   => -5,
+                    '(?<!d)x'   => -4,
+                    'x(?=c)'    => -3,
+                    'x(?!b)'    => -2,
+                    'x(?:a)'    => -1,
+                    '(foo)'     => 0,
+                    'bar(baz)'  => 1,
                 ),
                 array(
                     'foobarbaz' => array(

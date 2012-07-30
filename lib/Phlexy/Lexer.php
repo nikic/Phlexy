@@ -12,7 +12,27 @@ class Phlexy_Lexer {
         foreach ($tokenMap as $regex => $token) {
             $this->offsetToToken[$currentOffset] = $token;
 
-            $currentOffset += 1 + preg_match_all('~\((?!\?:)~', $regex, $dummyVar);
+            // increase the offset by one plus the number of capturing groups in the regex. I think the regex for
+            // counting is fairly complete, but it does not handle (?| ... ) groups.
+            $currentOffset += 1 + preg_match_all(
+                '~
+                    (?:
+                        \(\?\(
+                      | \[ [^\]\\\\]* (?: \\\\ . [^\]\\\\]* )* \]
+                    ) (*SKIP)(*FAIL) |
+                    \(
+                    (?!
+                        \?
+                        (?!
+                            <(?![!=])
+                          | P<
+                          | \'
+                        )
+                      | \*
+                    )
+                ~x',
+                $regex, $dummyVar
+            );
         }
     }
 

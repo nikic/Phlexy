@@ -33,22 +33,22 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                 ),
                 array(
                     'Field,Another Field,"comma -> , <- comma","quote -> \" <- quote"' => array(
-                        array('Field', 0, 1),
-                        array(',', 2, 1),
-                        array('Another Field', 0, 1),
-                        array(',', 2, 1),
-                        array('"comma -> , <- comma"', 1, 1),
-                        array(',', 2, 1),
-                        array('"quote -> \" <- quote"', 1, 1),
+                        array(0, 1, 'Field'),
+                        array(2, 1, ','),
+                        array(0, 1, 'Another Field'),
+                        array(2, 1, ','),
+                        array(1, 1, '"comma -> , <- comma"'),
+                        array(2, 1, ','),
+                        array(1, 1, '"quote -> \" <- quote"'),
                     ),
                     "Field1.1,Field1.2\nField2.1,Field2.2" => array(
-                        array('Field1.1', 0, 1),
-                        array(',', 2, 1),
-                        array('Field1.2', 0, 1),
-                        array("\n", 3, 1),
-                        array('Field2.1', 0, 2),
-                        array(',', 2, 2),
-                        array('Field2.2', 0, 2),
+                        array(0, 1, 'Field1.1'),
+                        array(2, 1, ','),
+                        array(0, 1, 'Field1.2'),
+                        array(3, 1, "\n"),
+                        array(0, 2, 'Field2.1'),
+                        array(2, 2, ','),
+                        array(0, 2, 'Field2.2'),
                     ),
                 )
             ),
@@ -59,7 +59,7 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                 ),
                 array(
                     '~' => array(
-                        array('~', 0, 1)
+                        array(0, 1, '~')
                     ),
                 )
             ),
@@ -86,8 +86,8 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                 ),
                 array(
                     'foobarbaz' => array(
-                        array('foo', 0, 1),
-                        array('barbaz', 1, 1),
+                        array(0, 1, 'foo', 'foo'),
+                        array(1, 1, 'barbaz', 'baz'),
                     ),
                 ),
             ),

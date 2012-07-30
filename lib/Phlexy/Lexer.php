@@ -3,6 +3,7 @@
 class Phlexy_Lexer {
     protected $regex;
     protected $offsetToToken;
+    protected $offsetToNumberOfCapturingGroups;
 
     public function __construct(array $tokenMap) {
         $this->regex = '~(' . str_replace('~', '\~', implode(')|(', array_keys($tokenMap))) . ')~A';
@@ -10,11 +11,10 @@ class Phlexy_Lexer {
         $this->offsetToToken = array();
         $currentOffset = 0;
         foreach ($tokenMap as $regex => $token) {
-            $this->offsetToToken[$currentOffset] = $token;
-
-            // increase the offset by one plus the number of capturing groups in the regex. I think the regex for
-            // counting is fairly complete, but it does not handle (?| ... ) groups.
-            $currentOffset += 1 + preg_match_all(
+            // The regex to count the number of capturing groups should be fairly complete. The only thing I know it
+            // won't work with are (?| ... ) groups.
+            // We have to add +1 because the whole regex will also be made capturing
+            $numberOfCapturingGroups = 1 + preg_match_all(
                 '~
                     (?:
                         \(\?\(
@@ -33,6 +33,11 @@ class Phlexy_Lexer {
                 ~x',
                 $regex, $dummyVar
             );
+
+            $this->offsetToToken[$currentOffset] = $token;
+            $this->offsetToNumberOfCapturingGroups[$currentOffset] = $numberOfCapturingGroups;
+
+            $currentOffset += $numberOfCapturingGroups;
         }
     }
 
@@ -49,7 +54,12 @@ class Phlexy_Lexer {
             // find the first non-empty element (but skipping $matches[0]) using a quick for loop
             for ($i = 1; '' === $matches[$i]; ++$i);
 
-            $tokens[] = array($matches[0], $this->offsetToToken[$i - 1], $line);
+            $token = array($this->offsetToToken[$i - 1], $line);
+            for ($j = 0; $j < $this->offsetToNumberOfCapturingGroups[$i - 1]; ++$j) {
+                $token[] = $matches[$i + $j];
+            }
+
+            $tokens[] = $token;
 
             $offset += strlen($matches[0]);
             $line += substr_count("\n", $matches[0]);

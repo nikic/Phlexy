@@ -12,6 +12,16 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    /**
+     * @dataProvider provideTestLexingException
+     */
+    public function testLexingException($regexToTokenMap, $input, $expectedExceptionMessage) {
+        $this->setExpectedException('Phlexy_LexingException', $expectedExceptionMessage);
+
+        $lexer = new Phlexy_Lexer($regexToTokenMap);
+        $lexer->lex($input);
+    }
+
     public function provideTestLexing() {
         return array(
             array(
@@ -43,6 +53,19 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
                         array('Field2.2', 0),
                     ),
                 )
+            ),
+        );
+    }
+
+    public function provideTestLexingException() {
+        return array(
+            array(
+                array(
+                    'foo' => 0,
+                    'bar' => 1,
+                ),
+                'baz',
+                'Unexpected character "b"'
             ),
         );
     }

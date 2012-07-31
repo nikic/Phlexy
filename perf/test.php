@@ -4,30 +4,53 @@ error_reporting(E_ALL | E_STRICT);
 
 require dirname(__FILE__) . '/../lib/Phlexy/bootstrap.php';
 
-$regexToToken = array(
+if (php_sapi_name() != 'cli') echo '<pre>';
+
+$cvsRegexes = array(
     '[^",\r\n]+'                     => 0,
     '"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"' => 1,
     ','                              => 2,
     '\r?\n'                          => 3,
 );
 
-$simpleLexer = new SimpleLexer($regexToToken);
-$compilingLexer = new Phlexy_Lexer($regexToToken);
-$compilingLexerWithoutCapturingGroups = new CompilingLexerWithoutCapturingGroups($regexToToken);
+$cvsData = trim(str_repeat('hallo world,foo bar,more foo,more bar,"rare , escape",some more,stuff' . "\n", 5000));
 
-$cvsData = trim(str_repeat('hallo world,foo bar,more foo,more bar,"rare , escape",some more,stuff' . "\n", 2000));
+$alphabet = range('a', 'z');
+$alphabetRegexes = array_combine($alphabet, $alphabet);
 
-$startTime = microtime(true);
-$res = $simpleLexer->lex($cvsData);
-var_dump(microtime(true) - $startTime);
+$allAString = str_repeat('a', 100000);
+$allZString = str_repeat('z', 20000);
 
-$startTime = microtime(true);
-$res = $compilingLexer->lex($cvsData);
-var_dump(microtime(true) - $startTime);
+$randomString = '';
+for ($i = 0; $i < 50000; ++$i) {
+    $randomString .= $alphabet[mt_rand(0, count($alphabet) - 1)];
+}
 
-$startTime = microtime(true);
-$res = $compilingLexerWithoutCapturingGroups->lex($cvsData);
-var_dump(microtime(true) - $startTime);
+echo 'Timing lexing of CVS data:', "\n";
+testPerformanceOfAllLexers($cvsRegexes, $cvsData);
+echo 'Timing alphabet lexing of all "a":', "\n";
+testPerformanceOfAllLexers($alphabetRegexes, $allAString);
+echo 'Timing alphabet lexing of all "z":', "\n";
+testPerformanceOfAllLexers($alphabetRegexes, $allZString);
+echo 'Timing alphabet lexing of random string:', "\n";
+testPerformanceOfAllLexers($alphabetRegexes, $randomString);
+
+function testPerformanceOfAllLexers(array $regexToToken, $string) {
+    testLexingPerformance('SimpleLexer', $regexToToken, $string);
+    testLexingPerformance('Phlexy_Lexer', $regexToToken, $string);
+    testLexingPerformance('CompilingLexerWithoutCapturingGroups', $regexToToken, $string);
+    echo "\n";
+}
+
+function testLexingPerformance($lexerClassName, array $regexToToken, $string) {
+    $lexer = new $lexerClassName($regexToToken);
+
+    $startTime = microtime(true);
+    $lexer->lex($string);
+    $endTime = microtime(true);
+
+    echo 'Took ', $endTime - $startTime, ' seconds (', $lexerClassName, ')', "\n";
+}
 
 class SimpleLexer {
     protected $regexToToken;

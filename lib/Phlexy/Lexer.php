@@ -5,12 +5,12 @@ class Phlexy_Lexer {
     protected $offsetToToken;
     protected $offsetToNumberOfCapturingGroups;
 
-    public function __construct(array $tokenMap) {
-        $this->regex = '~(' . str_replace('~', '\~', implode(')|(', array_keys($tokenMap))) . ')~A';
+    public function __construct(array $regexToToken) {
+        $this->regex = '~(' . str_replace('~', '\~', implode(')|(', array_keys($regexToToken))) . ')~A';
 
         $this->offsetToToken = array();
         $currentOffset = 0;
-        foreach ($tokenMap as $regex => $token) {
+        foreach ($regexToToken as $regex => $token) {
             // The regex to count the number of capturing groups should be fairly complete. The only thing I know it
             // won't work with are (?| ... ) groups.
             // We have to add +1 because the whole regex will also be made capturing

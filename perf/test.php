@@ -40,15 +40,12 @@ testPerformanceOfAllLexers($alphabetRegexes, $randomString);
 function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
     $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
-    $regexes = array_keys($regexToTokenMap);
-
-    $regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne($regexes);
-    $offsetToLengthMap = $lexerDataGenerator->getOffsetToLengthMap(array_keys($regexToTokenMap));
-    $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), array_values($regexToTokenMap));
+    list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
+        = $lexerDataGenerator->getInfoFromRegexToTokenMap($regexToTokenMap);
 
     testLexingPerformance(new Lexer\Simple($regexToTokenMap), $string);
-    testLexingPerformance(new Lexer\WithCapturingGroups($regex, $offsetToTokenMap, $offsetToLengthMap), $string);
-    testLexingPerformance(new Lexer\WithoutCapturingGroups($regex, $offsetToTokenMap), $string);
+    testLexingPerformance(new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
+    testLexingPerformance(new Lexer\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
     echo "\n";
 }
 

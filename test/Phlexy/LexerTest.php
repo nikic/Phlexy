@@ -11,13 +11,10 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
     public function testLexing($regexToTokenMap, $inputsToExpectedOutputsMap) {
         $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
-        $regexes = array_keys($regexToTokenMap);
+        list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
+            = $lexerDataGenerator->getInfoFromRegexToTokenMap($regexToTokenMap);
 
-        $regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne($regexes);
-        $offsetToLengthMap = $lexerDataGenerator->getOffsetToLengthMap(array_keys($regexToTokenMap));
-        $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), array_values($regexToTokenMap));
-
-        $lexer = new Lexer\WithCapturingGroups($regex, $offsetToTokenMap, $offsetToLengthMap);
+        $lexer = new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
 
         foreach ($inputsToExpectedOutputsMap as $input => $expectedOutput) {
             $this->assertEquals($expectedOutput, $lexer->lex($input));
@@ -32,13 +29,10 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
 
         $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
-        $regexes = array_keys($regexToTokenMap);
+        list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
+            = $lexerDataGenerator->getInfoFromRegexToTokenMap($regexToTokenMap);
 
-        $regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne($regexes);
-        $offsetToLengthMap = $lexerDataGenerator->getOffsetToLengthMap(array_keys($regexToTokenMap));
-        $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), array_values($regexToTokenMap));
-
-        $lexer = new Lexer\WithCapturingGroups($regex, $offsetToTokenMap, $offsetToLengthMap);
+        $lexer = new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
 
         $lexer->lex($input);
     }

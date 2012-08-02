@@ -1,3 +1,5 @@
 <?php
 
-class Phlexy_LexingException extends RuntimeException {}
+namespace Phlexy;
+
+class LexingException extends \RuntimeException {}

@@ -1,11 +1,15 @@
 <?php
 
-class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
+namespace Phlexy;
+
+use Phlexy\Lexer;
+
+class LexerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider provideTestLexing
      */
     public function testLexing($regexToTokenMap, $inputsToExpectedOutputsMap) {
-        $lexer = new Phlexy_Lexer_WithCapturingGroups($regexToTokenMap);
+        $lexer = new Lexer\WithCapturingGroups($regexToTokenMap);
 
         foreach ($inputsToExpectedOutputsMap as $input => $expectedOutput) {
             $this->assertEquals($expectedOutput, $lexer->lex($input));
@@ -16,9 +20,9 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
      * @dataProvider provideTestLexingException
      */
     public function testLexingException($regexToTokenMap, $input, $expectedExceptionMessage) {
-        $this->setExpectedException('Phlexy_LexingException', $expectedExceptionMessage);
+        $this->setExpectedException('Phlexy\\LexingException', $expectedExceptionMessage);
 
-        $lexer = new Phlexy_Lexer_WithCapturingGroups($regexToTokenMap);
+        $lexer = new Lexer\WithCapturingGroups($regexToTokenMap);
         $lexer->lex($input);
     }
 

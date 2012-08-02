@@ -1,6 +1,8 @@
 <?php
 
-class Phlexy_LexerDataGenerator {
+namespace Phlexy;
+
+class LexerDataGenerator {
     public function getAllRegexesCompiledIntoOne($regexes) {
         return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A';
     }

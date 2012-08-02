@@ -1,5 +1,7 @@
 <?php
 
+use Phlexy\Lexer;
+
 error_reporting(E_ALL | E_STRICT);
 
 require dirname(__FILE__) . '/../lib/Phlexy/bootstrap.php';
@@ -36,13 +38,13 @@ echo 'Timing alphabet lexing of random string:', "\n";
 testPerformanceOfAllLexers($alphabetRegexes, $randomString);
 
 function testPerformanceOfAllLexers(array $regexToToken, $string) {
-    testLexingPerformance(new Phlexy_Lexer_Simple($regexToToken), $string);
-    testLexingPerformance(new Phlexy_Lexer_WithCapturingGroups($regexToToken), $string);
-    testLexingPerformance(new Phlexy_Lexer_WithoutCapturingGroups($regexToToken), $string);
+    testLexingPerformance(new Lexer\Simple($regexToToken), $string);
+    testLexingPerformance(new Lexer\WithCapturingGroups($regexToToken), $string);
+    testLexingPerformance(new Lexer\WithoutCapturingGroups($regexToToken), $string);
     echo "\n";
 }
 
-function testLexingPerformance(Phlexy_Lexer $lexer, $string) {
+function testLexingPerformance(Lexer $lexer, $string) {
     $startTime = microtime(true);
     $lexer->lex($string);
     $endTime = microtime(true);

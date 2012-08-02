@@ -1,5 +1,7 @@
 <?php
 
-interface Phlexy_Lexer {
+namespace Phlexy;
+
+interface Lexer {
     public function lex($string);
 }

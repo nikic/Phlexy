@@ -1,6 +1,8 @@
 <?php
 
-class Phlexy_Lexer_Simple implements Phlexy_Lexer {
+namespace Phlexy\Lexer;
+
+class Simple implements \Phlexy\Lexer {
     protected $regexToToken;
 
     public function __construct(array $regexToToken) {
@@ -29,7 +31,7 @@ class Phlexy_Lexer_Simple implements Phlexy_Lexer {
                 continue 2;
             }
 
-            throw new Phlexy_LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
+            throw new \Phlexy\LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
         }
 
         return $tokens;

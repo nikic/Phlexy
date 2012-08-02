@@ -1,12 +1,14 @@
 <?php
 
-class Phlexy_Lexer_WithCapturingGroups implements Phlexy_Lexer {
+namespace Phlexy\Lexer;
+
+class WithCapturingGroups implements \Phlexy\Lexer {
     protected $regex;
     protected $offsetToToken;
     protected $offsetToNumberOfCapturingGroups;
 
     public function __construct(array $regexToToken) {
-        $lexerDataGenerator = new Phlexy_LexerDataGenerator;
+        $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
         $this->regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne(array_keys($regexToToken));
 
@@ -31,7 +33,7 @@ class Phlexy_Lexer_WithCapturingGroups implements Phlexy_Lexer {
         $line = 1;
         while (isset($string[$offset])) {
             if (!preg_match($this->regex, $string, $matches, 0, $offset)) {
-                throw new Phlexy_LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
+                throw new \Phlexy\LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
             }
 
             // find the first non-empty element (but skipping $matches[0]) using a quick for loop

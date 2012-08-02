@@ -7,14 +7,10 @@ class WithCapturingGroups implements \Phlexy\Lexer {
     protected $offsetToTokenMap;
     protected $offsetToLengthMap;
 
-    public function __construct(array $regexToTokenMap) {
-        $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
-
-        $regexes = array_keys($regexToTokenMap);
-
-        $this->regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne($regexes);
-        $this->offsetToLengthMap = $lexerDataGenerator->getOffsetToLengthMap(array_keys($regexToTokenMap));
-        $this->offsetToTokenMap = array_combine(array_keys($this->offsetToLengthMap), $regexes);
+    public function __construct($regex, array $offsetToTokenMap, array $offsetToLengthMap) {
+        $this->regex = $regex;
+        $this->offsetToTokenMap = $offsetToTokenMap;
+        $this->offsetToLengthMap = $offsetToLengthMap;
     }
 
     public function lex($string) {

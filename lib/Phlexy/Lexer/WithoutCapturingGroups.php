@@ -6,12 +6,9 @@ class WithoutCapturingGroups implements \Phlexy\Lexer {
     protected $regex;
     protected $offsetToToken;
 
-    public function __construct(array $regexToToken) {
-        $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
-
-        $this->regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne(array_keys($regexToToken));
-
-        $this->offsetToToken = array_values($regexToToken);
+    public function __construct($regex, array $offsetToTokenMap) {
+        $this->regex = $regex;
+        $this->offsetToToken = $offsetToTokenMap;
     }
 
     public function lex($string) {

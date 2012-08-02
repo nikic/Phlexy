@@ -37,10 +37,18 @@ testPerformanceOfAllLexers($alphabetRegexes, $allZString);
 echo 'Timing alphabet lexing of random string:', "\n";
 testPerformanceOfAllLexers($alphabetRegexes, $randomString);
 
-function testPerformanceOfAllLexers(array $regexToToken, $string) {
-    testLexingPerformance(new Lexer\Simple($regexToToken), $string);
-    testLexingPerformance(new Lexer\WithCapturingGroups($regexToToken), $string);
-    testLexingPerformance(new Lexer\WithoutCapturingGroups($regexToToken), $string);
+function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
+    $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
+
+    $regexes = array_keys($regexToTokenMap);
+
+    $regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne($regexes);
+    $offsetToLengthMap = $lexerDataGenerator->getOffsetToLengthMap(array_keys($regexToTokenMap));
+    $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), array_values($regexToTokenMap));
+
+    testLexingPerformance(new Lexer\Simple($regexToTokenMap), $string);
+    testLexingPerformance(new Lexer\WithCapturingGroups($regex, $offsetToTokenMap, $offsetToLengthMap), $string);
+    testLexingPerformance(new Lexer\WithoutCapturingGroups($regex, $offsetToTokenMap), $string);
     echo "\n";
 }
 

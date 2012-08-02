@@ -5,7 +5,7 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
      * @dataProvider provideTestLexing
      */
     public function testLexing($regexToTokenMap, $inputsToExpectedOutputsMap) {
-        $lexer = new Phlexy_Lexer($regexToTokenMap);
+        $lexer = new Phlexy_Lexer_WithCapturingGroups($regexToTokenMap);
 
         foreach ($inputsToExpectedOutputsMap as $input => $expectedOutput) {
             $this->assertEquals($expectedOutput, $lexer->lex($input));
@@ -18,7 +18,7 @@ class Phlexy_LexerTest extends PHPUnit_Framework_TestCase {
     public function testLexingException($regexToTokenMap, $input, $expectedExceptionMessage) {
         $this->setExpectedException('Phlexy_LexingException', $expectedExceptionMessage);
 
-        $lexer = new Phlexy_Lexer($regexToTokenMap);
+        $lexer = new Phlexy_Lexer_WithCapturingGroups($regexToTokenMap);
         $lexer->lex($input);
     }
 

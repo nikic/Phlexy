@@ -3,12 +3,12 @@
 namespace Phlexy\Lexer;
 
 class WithCapturingGroups implements \Phlexy\Lexer {
-    protected $regex;
+    protected $compiledRegex;
     protected $offsetToTokenMap;
     protected $offsetToLengthMap;
 
-    public function __construct($regex, array $offsetToTokenMap, array $offsetToLengthMap) {
-        $this->regex = $regex;
+    public function __construct($compiledRegex, array $offsetToTokenMap, array $offsetToLengthMap) {
+        $this->compiledRegex = $compiledRegex;
         $this->offsetToTokenMap = $offsetToTokenMap;
         $this->offsetToLengthMap = $offsetToLengthMap;
     }
@@ -19,8 +19,10 @@ class WithCapturingGroups implements \Phlexy\Lexer {
         $offset = 0;
         $line = 1;
         while (isset($string[$offset])) {
-            if (!preg_match($this->regex, $string, $matches, 0, $offset)) {
-                throw new \Phlexy\LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
+            if (!preg_match($this->compiledRegex, $string, $matches, 0, $offset)) {
+                throw new \Phlexy\LexingException(sprintf(
+                    'Unexpected character "%s" on line %d', $string[$offset], $line
+                ));
             }
 
             // find the first non-empty element (but skipping $matches[0]) using a quick for loop

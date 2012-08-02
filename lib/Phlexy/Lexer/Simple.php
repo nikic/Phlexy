@@ -31,7 +31,9 @@ class Simple implements \Phlexy\Lexer {
                 continue 2;
             }
 
-            throw new \Phlexy\LexingException(sprintf('Unexpected character "%s"', $string[$offset]));
+            throw new \Phlexy\LexingException(sprintf(
+                'Unexpected character "%s" on line %d', $string[$offset], $line
+            ));
         }
 
         return $tokens;

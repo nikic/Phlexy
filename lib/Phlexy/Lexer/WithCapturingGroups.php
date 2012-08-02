@@ -4,26 +4,17 @@ namespace Phlexy\Lexer;
 
 class WithCapturingGroups implements \Phlexy\Lexer {
     protected $regex;
-    protected $offsetToToken;
-    protected $offsetToNumberOfCapturingGroups;
+    protected $offsetToTokenMap;
+    protected $offsetToLengthMap;
 
-    public function __construct(array $regexToToken) {
+    public function __construct(array $regexToTokenMap) {
         $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
-        $this->regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne(array_keys($regexToToken));
+        $regexes = array_keys($regexToTokenMap);
 
-        $this->offsetToToken = array();
-        $this->offsetToNumberOfCapturingGroups = array();
-        $currentOffset = 0;
-        foreach ($regexToToken as $regex => $token) {
-            // We have to add +1 because the whole regex will also be made capturing
-            $numberOfCapturingGroups = 1 + $lexerDataGenerator->getNumberOfCapturingGroupsInRegex($regex);
-
-            $this->offsetToToken[$currentOffset] = $token;
-            $this->offsetToNumberOfCapturingGroups[$currentOffset] = $numberOfCapturingGroups;
-
-            $currentOffset += $numberOfCapturingGroups;
-        }
+        $this->regex = $lexerDataGenerator->getAllRegexesCompiledIntoOne($regexes);
+        $this->offsetToLengthMap = $lexerDataGenerator->getOffsetToLengthMap(array_keys($regexToTokenMap));
+        $this->offsetToTokenMap = array_combine(array_keys($this->offsetToLengthMap), $regexes);
     }
 
     public function lex($string) {
@@ -39,8 +30,8 @@ class WithCapturingGroups implements \Phlexy\Lexer {
             // find the first non-empty element (but skipping $matches[0]) using a quick for loop
             for ($i = 1; '' === $matches[$i]; ++$i);
 
-            $token = array($this->offsetToToken[$i - 1], $line);
-            for ($j = 0; $j < $this->offsetToNumberOfCapturingGroups[$i - 1]; ++$j) {
+            $token = array($this->offsetToTokenMap[$i - 1], $line);
+            for ($j = 0; $j < $this->offsetToLengthMap[$i - 1]; ++$j) {
                 $token[] = $matches[$i + $j];
             }
 

@@ -3,8 +3,23 @@
 namespace Phlexy;
 
 class LexerDataGenerator {
-    public function getAllRegexesCompiledIntoOne($regexes) {
+    public function getAllRegexesCompiledIntoOne(array $regexes) {
         return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A';
+    }
+
+    public function getOffsetToLengthMap(array $regexes) {
+        $offsetToLengthMap = array();
+
+        $currentOffset = 0;
+        foreach ($regexes as $regex) {
+            // We have to add +1 because the whole regex will also be made capturing
+            $numberOfCapturingGroups = 1 + $this->getNumberOfCapturingGroupsInRegex($regex);
+
+            $offsetToLengthMap[$currentOffset] = $numberOfCapturingGroups;
+            $currentOffset += $numberOfCapturingGroups;
+        }
+
+        return $offsetToLengthMap;
     }
 
     public function getNumberOfCapturingGroupsInRegex($regex) {

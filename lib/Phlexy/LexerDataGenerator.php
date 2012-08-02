@@ -3,7 +3,7 @@
 namespace Phlexy;
 
 class LexerDataGenerator {
-    public function getInfoFromRegexToTokenMap(array $regexToTokenMap) {
+    public function getDataFromRegexToTokenMap(array $regexToTokenMap) {
         $regexes = array_keys($regexToTokenMap);
         $tokens = array_values($regexToTokenMap);
 

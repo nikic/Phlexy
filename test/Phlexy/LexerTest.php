@@ -12,7 +12,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
         $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
         list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-            = $lexerDataGenerator->getInfoFromRegexToTokenMap($regexToTokenMap);
+            = $lexerDataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
 
         $lexer = new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
 
@@ -30,7 +30,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase {
         $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
         list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-            = $lexerDataGenerator->getInfoFromRegexToTokenMap($regexToTokenMap);
+            = $lexerDataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
 
         $lexer = new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
 

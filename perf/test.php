@@ -41,7 +41,7 @@ function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
     $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
 
     list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-        = $lexerDataGenerator->getInfoFromRegexToTokenMap($regexToTokenMap);
+        = $lexerDataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
 
     testLexingPerformance(new Lexer\Simple($regexToTokenMap), $string);
     testLexingPerformance(new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);

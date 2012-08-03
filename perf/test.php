@@ -46,6 +46,10 @@ function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
     testLexingPerformance(new Lexer\Simple($regexToTokenMap), $string);
     testLexingPerformance(new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
     testLexingPerformance(new Lexer\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
+
+    $lexer = generateLexer($regexToTokenMap);
+    testLexingPerformance($lexer, $string);
+
     echo "\n";
 }
 
@@ -55,4 +59,85 @@ function testLexingPerformance(Lexer $lexer, $string) {
     $endTime = microtime(true);
 
     echo 'Took ', $endTime - $startTime, ' seconds (', get_class($lexer), ')', "\n";
+}
+
+function generateLexer(array $regexToTokenMap) {
+    $codeGen = new Phlexy\CodeGenerator;
+    $dataGenerator = new Phlexy\LexerDataGenerator;
+
+    list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
+        = $dataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
+
+    $offsets = array_keys($offsetToTokenMap);
+    $tokens = array_values($offsetToTokenMap);
+    $actions = range(0, count($regexToTokenMap) - 1);
+
+    $offsetToActionMap = array_combine($offsets, $actions);
+
+    $compiledRegexString = $codeGen->makeString($compiledRegex);
+    $offsetToActionMapArray = $codeGen->makeArray($offsetToActionMap);
+    $dispatchCode = $codeGen->indent(
+        generateBinaryDispatchCode($codeGen, $tokens, 0, count($tokens) - 1),
+        3
+    );
+
+    $name = 'GeneratedLexer_' . uniqid();
+
+    $code = <<<CODE
+class $name implements \Phlexy\Lexer {
+    protected \$compiledRegex = $compiledRegexString;
+    protected \$offsetToActionMap = $offsetToActionMapArray;
+
+    public function lex(\$string) {
+        \$tokens = array();
+
+        \$offset = 0;
+        \$line = 1;
+        while (isset(\$string[\$offset])) {
+            if (!preg_match(\$this->compiledRegex, \$string, \$matches, 0, \$offset)) {
+                throw new \Phlexy\LexingException(sprintf(
+                    'Unexpected character "%s" on line %d', \$string[\$offset], \$line
+                ));
+            }
+
+            // find the first non-empty element (but skipping \$matches[0]) using a quick for loop
+            for (\$i = 1; '' === \$matches[\$i]; ++\$i);
+
+            \$action = \$this->offsetToActionMap[\$i - 1];
+$dispatchCode
+
+            \$tokens[] = \$token;
+
+            \$offset += strlen(\$matches[0]);
+            \$line += substr_count("\n", \$matches[0]);
+        }
+
+        return \$tokens;
+    }
+}
+CODE;
+
+    eval($code);
+
+    return new $name;
+}
+
+function generateBinaryDispatchCode(Phlexy\CodeGenerator $codeGen, array $tokens, $start, $end) {
+    if ($end == $start) {
+        return '$token = array(' . $codeGen->makeValue($tokens[$start]) . ', $line);';
+    } else if ($end - $start == 1) {
+        return $codeGen->makeIf(
+            '$action === ' . $start,
+            '$token = array(' . $codeGen->makeValue($tokens[$start]) . ', $line);',
+            '$token = array(' . $codeGen->makeValue($tokens[$end]) . ', $line);'
+        );
+    } else {
+        $middle = $start + (int) ceil(($end - $start) / 2);
+
+        return $codeGen->makeIf(
+            '$action < ' . $middle,
+            generateBinaryDispatchCode($codeGen, $tokens, $start, $middle - 1),
+            generateBinaryDispatchCode($codeGen, $tokens, $middle, $end)
+        );
+    }
 }

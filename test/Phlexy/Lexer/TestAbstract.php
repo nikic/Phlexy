@@ -72,11 +72,27 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                 ),
                 array(
                     '$foo 3.141 $bar' => array(
-                        array(1, 1, '$foo', 'foo'),
+                        array(1, 1, '$foo', array(1 => 'foo')),
                         array(0, 1, ' '),
-                        array(2, 1, '3.141', '3', '141'),
+                        array(2, 1, '3.141', array(1 => '3', 2 => '141')),
                         array(0, 1, ' '),
-                        array(1, 1, '$bar', 'bar'),
+                        array(1, 1, '$bar', array(1 => 'bar')),
+                    ),
+                )
+            ),
+            array(
+                array(
+                    'x'      => 0,
+                    'a(y)?b' => 1,
+                ),
+                array(
+                    'xayb' => array(
+                        array(0, 1, 'x'),
+                        array(1, 1, 'ayb', array(1 => 'y')),
+                    ),
+                    'xab' => array(
+                        array(0, 1, 'x'),
+                        array(1, 1, 'ab'),
                     ),
                 )
             ),

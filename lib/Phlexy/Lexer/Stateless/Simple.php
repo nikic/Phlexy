@@ -23,10 +23,17 @@ class Simple implements \Phlexy\Lexer {
                     continue;
                 }
 
-                $tokens[] = array_merge(array($token, $line), $matches);
+                $matchedString = $matches[0];
 
-                $offset += strlen($matches[0]);
-                $line += substr_count($matches[0], "\n");
+                unset($matches[0]);
+                if (!empty($matches)) {
+                    $tokens[] = array($token, $line, $matchedString, $matches);
+                } else {
+                    $tokens[] = array($token, $line, $matchedString);
+                }
+
+                $offset += strlen($matchedString);
+                $line += substr_count($matchedString, "\n");
 
                 continue 2;
             }

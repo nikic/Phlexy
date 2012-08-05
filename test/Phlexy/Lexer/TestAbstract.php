@@ -2,16 +2,18 @@
 
 namespace Phlexy\Lexer;
 
+use Phlexy\RestartException;
+
 abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
     /** @return \Phlexy\Lexer */
-    abstract function createLexer(array $regexToTokenMap);
+    abstract function createLexer(array $lexerDefinition);
 
     /** @return array */
     abstract function provideTestLexing();
 
     /** @dataProvider provideTestLexing */
-    public function testLexing(array $regexToTokenMap, array $inputsToExpectedOutputsMap) {
-        $lexer = $this->createLexer($regexToTokenMap);
+    public function testLexing(array $lexerDefinition, array $inputsToExpectedOutputsMap) {
+        $lexer = $this->createLexer($lexerDefinition);
 
         foreach ($inputsToExpectedOutputsMap as $input => $expectedOutput) {
             $this->assertEquals($expectedOutput, $lexer->lex($input));
@@ -19,10 +21,10 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
     }
 
     /** @dataProvider provideTestLexingException */
-    public function testLexingException(array $regexToTokenMap, $input, $expectedExceptionMessage) {
+    public function testLexingException(array $lexerDefinition, $input, $expectedExceptionMessage) {
         $this->setExpectedException('Phlexy\\LexingException', $expectedExceptionMessage);
 
-        $lexer = $this->createLexer($regexToTokenMap);
+        $lexer = $this->createLexer($lexerDefinition);
 
         $lexer->lex($input);
     }
@@ -79,6 +81,146 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                 )
             ),
         );
+    }
+
+    public function getStatefulTests() {
+        return array_merge(
+            $this->statelessTestsToStateful($this->getTestsWithoutCapturingGroups()),
+            $this->statelessTestsToStateful($this->getTestsWithCapturingGroups()),
+            array(
+                array(
+                    array(
+                        'INITIAL' => array(
+                            // a keyword
+                            'as\b' => T_AS,
+
+                            // some tokens
+                            '\$\w+' => T_VARIABLE,
+                            '\w+'  => T_STRING,
+                            '\s+'  => T_WHITESPACE,
+                            '\{'   => '{',
+                            '\}'   => '}',
+
+                            // go into a new state where keywords are ignored
+                            '->' => function(Stateful $lexer) {
+                                $lexer->pushState('LOOKING_FOR_PROPETY');
+
+                                return T_OBJECT_OPERATOR;
+                            },
+                        ),
+                        'LOOKING_FOR_PROPETY' => array(
+                            '\s+' => T_WHITESPACE,
+                            '\w+' => function(Stateful $lexer) {
+                                $lexer->popState();
+
+                                return T_STRING;
+                            },
+                            '' => function(Stateful $lexer) {
+                                $lexer->popState();
+
+                                throw new RestartException;
+                            },
+                        ),
+                    ),
+                    array(
+                        'as' =>
+                        array(
+                            array(T_AS, 1, 'as'),
+                        ),
+                        '$foo -> bar' =>
+                        array(
+                            array(T_VARIABLE, 1, '$foo'),
+                            array(T_WHITESPACE, 1, ' '),
+                            array(T_OBJECT_OPERATOR, 1, '->'),
+                            array(T_WHITESPACE, 1, ' '),
+                            array(T_STRING, 1, 'bar'),
+                        ),
+                        '$foo -> as' =>
+                        array(
+                            array(T_VARIABLE, 1, '$foo'),
+                            array(T_WHITESPACE, 1, ' '),
+                            array(T_OBJECT_OPERATOR, 1, '->'),
+                            array(T_WHITESPACE, 1, ' '),
+                            array(T_STRING, 1, 'as'),
+                        ),
+                        '$foo -> {foo}' =>
+                        array(
+                            array(T_VARIABLE, 1, '$foo'),
+                            array(T_WHITESPACE, 1, ' '),
+                            array(T_OBJECT_OPERATOR, 1, '->'),
+                            array(T_WHITESPACE, 1, ' '),
+                            array('{', 1, '{'),
+                            array(T_STRING, 1, 'foo'),
+                            array('}', 1, '}'),
+                        ),
+                    )
+                ),
+                array(
+                    // this doesn't make any sense, just testing different state methods
+                    array(
+                        'INITIAL' => array(
+                            'a' => function(Stateful $lexer) {
+                                $token = array($lexer->hasPushedStates(), $lexer->getStateStack());
+                                $lexer->pushState('A');
+                                return $token;
+                            },
+                        ),
+                        'A' => array(
+                            'b' => function(Stateful $lexer) {
+                                $token = array($lexer->hasPushedStates(), $lexer->getStateStack());
+                                $lexer->pushState('B');
+                                return $token;
+                            },
+                            'e' => function(Stateful $lexer) {
+                                $token = array($lexer->hasPushedStates(), $lexer->getStateStack());
+                                // nothing more
+                                return $token;
+                            },
+                        ),
+                        'B' => array(
+                            'c' => function(Stateful $lexer) {
+                                $token = array($lexer->hasPushedStates(), $lexer->getStateStack());
+                                $lexer->swapState('C');
+                                return $token;
+                            },
+                        ),
+                        'C' => array(
+                            'd' => function(Stateful $lexer) {
+                                $token = array($lexer->hasPushedStates(), $lexer->getStateStack());
+                                $lexer->popState();
+                                return $token;
+                            },
+                        ),
+                    ),
+                    array(
+                        'abcde' => array(
+                            array(array(false, array('INITIAL')), 1, 'a'),
+                            array(array(true, array('INITIAL', 'A')), 1, 'b'),
+                            array(array(true, array('INITIAL', 'A', 'B')), 1, 'c'),
+                            array(array(true, array('INITIAL', 'A', 'C')), 1, 'd'),
+                            array(array(true, array('INITIAL', 'A')), 1, 'e'),
+                        )
+                    )
+                ),
+            )
+        );
+    }
+
+    protected function statelessTestsToStateful(array $tests) {
+        foreach ($tests as &$test) {
+            // just put all rules into a single state
+            $test[0] = array('INITIAL' => $test[0]);
+
+            // for the capturing group tests the stateful output is different because
+            // the capturing groups are not returned, so this has to be adjusted here
+            foreach ($test[1] as &$output) {
+                foreach ($output as &$token) {
+                    $token = array_slice($token, 0, 3);
+                }
+            }
+        }
+
+        return $tests;
     }
 
     public function provideTestLexingException() {

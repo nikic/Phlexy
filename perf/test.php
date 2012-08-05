@@ -1,6 +1,7 @@
 <?php
 
 use Phlexy\Lexer;
+use Phlexy\Lexer\Stateless;
 
 error_reporting(E_ALL | E_STRICT);
 
@@ -43,9 +44,9 @@ function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
     list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
         = $lexerDataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
 
-    testLexingPerformance(new Lexer\Simple($regexToTokenMap), $string);
-    testLexingPerformance(new Lexer\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
-    testLexingPerformance(new Lexer\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
+    testLexingPerformance(new Stateless\Simple($regexToTokenMap), $string);
+    testLexingPerformance(new Stateless\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
+    testLexingPerformance(new Stateless\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
 
     $lexer = generateLexer($regexToTokenMap);
     testLexingPerformance($lexer, $string);

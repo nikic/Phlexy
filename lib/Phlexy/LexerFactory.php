@@ -15,7 +15,7 @@ class LexerFactory {
         $regexes = array_keys($regexToTokenMap);
         $tokens = array_values($regexToTokenMap);
 
-        $compiledRegex = $this->dataGenerator->getAllRegexesCompiledIntoOne($regexes);
+        $compiledRegex = $this->dataGenerator->getCompiledRegex($regexes);
         $offsetToLengthMap = $this->dataGenerator->getOffsetToLengthMap($regexes);
         $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), $tokens);
 

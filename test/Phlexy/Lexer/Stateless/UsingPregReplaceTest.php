@@ -8,10 +8,13 @@ class UsingPregReplaceTest extends \Phlexy\Lexer\TestAbstract {
     public function createLexer(array $regexToTokenMap) {
         $dataGenerator = new \Phlexy\LexerDataGenerator;
 
-        list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
+        list(, $offsetToTokenMap, $offsetToLengthMap)
             = $dataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
 
-        return new UsingPregReplace($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
+        return new UsingPregReplace(
+            $dataGenerator->getCompiledRegexForPregReplace(array_keys($regexToTokenMap)),
+            $offsetToTokenMap, $offsetToLengthMap
+        );
     }
 
     public function provideTestLexing() {

@@ -8,8 +8,7 @@ class UsingPregReplace implements \Phlexy\Lexer {
     protected $offsetToLengthMap;
 
     public function __construct($compiledRegex, array $offsetToTokenMap, array $offsetToLengthMap) {
-        // the \G is not strictly necessary, but it makes preg_replace abort early when not lexable
-        $this->compiledRegex = '~\G(' . substr($compiledRegex, 1, -2) . ')~';
+        $this->compiledRegex = $compiledRegex;
         $this->offsetToTokenMap = $offsetToTokenMap;
         $this->offsetToLengthMap = $offsetToLengthMap;
     }

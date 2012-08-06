@@ -7,15 +7,20 @@ class LexerDataGenerator {
         $regexes = array_keys($regexToTokenMap);
         $tokens = array_values($regexToTokenMap);
 
-        $compiledRegex = $this->getAllRegexesCompiledIntoOne($regexes);
+        $compiledRegex = $this->getCompiledRegex($regexes);
         $offsetToLengthMap = $this->getOffsetToLengthMap($regexes);
         $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), $tokens);
 
         return array($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
     }
 
-    public function getAllRegexesCompiledIntoOne(array $regexes) {
+    public function getCompiledRegex(array $regexes) {
         return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A';
+    }
+
+    public function getCompiledRegexForPregReplace(array $regexes) {
+        // the \G is not strictly necessary, but it makes preg_replace abort early when not lexable
+        return '~\G((' . str_replace('~', '\~', implode(')|(', $regexes)) . '))~';
     }
 
     public function getOffsetToLengthMap(array $regexes) {

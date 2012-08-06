@@ -39,15 +39,15 @@ echo 'Timing alphabet lexing of random string:', "\n";
 testPerformanceOfAllLexers($alphabetRegexes, $randomString);
 
 function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
-    $lexerDataGenerator = new \Phlexy\LexerDataGenerator;
+    $dataGen = new \Phlexy\LexerDataGenerator;
 
     list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-        = $lexerDataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
+        = $dataGen->getDataFromRegexToTokenMap($regexToTokenMap);
 
     testLexingPerformance(new Stateless\Simple($regexToTokenMap), $string);
     testLexingPerformance(new Stateless\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
     testLexingPerformance(new Stateless\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
-    testLexingPerformance(new  Stateless\UsingPregReplace($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
+    testLexingPerformance(new  Stateless\UsingPregReplace($dataGen->getCompiledRegexForPregReplace(array_keys($regexToTokenMap)), $offsetToTokenMap, $offsetToLengthMap), $string);
 
     $lexer = generateLexer($regexToTokenMap);
     testLexingPerformance($lexer, $string);

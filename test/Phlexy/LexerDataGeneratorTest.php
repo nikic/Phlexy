@@ -8,7 +8,7 @@ class LexerDataGeneratorTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(
             '~(foo bar)|(foo (bar), (?(?!bla)bli|blu))|(foo \~ bar)~A',
-            $dataGenerator->getAllRegexesCompiledIntoOne(array(
+            $dataGenerator->getCompiledRegex(array(
                 'foo bar',
                 'foo (bar), (?(?!bla)bli|blu)',
                 'foo ~ bar',

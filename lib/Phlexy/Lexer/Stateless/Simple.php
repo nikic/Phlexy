@@ -5,10 +5,11 @@ namespace Phlexy\Lexer\Stateless;
 class Simple implements \Phlexy\Lexer {
     protected $regexToToken;
 
-    public function __construct(array $regexToToken) {
+    public function __construct(array $regexToToken, $additionalModifiers = 'i') {
         $this->regexToToken = array();
         foreach ($regexToToken as $regex => $token) {
-            $this->regexToToken['~' . str_replace('~', '\~', $regex) . '~A'] = $token;
+            $regex = '~' . str_replace('~', '\~', $regex) . '~A' . $additionalModifiers;
+            $this->regexToToken[$regex] = $token;
         }
     }
 

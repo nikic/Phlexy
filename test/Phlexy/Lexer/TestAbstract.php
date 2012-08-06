@@ -6,14 +6,14 @@ use Phlexy\RestartException;
 
 abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
     /** @return \Phlexy\Lexer */
-    abstract function createLexer(array $lexerDefinition);
+    abstract function createLexer(array $lexerDefinition, $additionalModifiers);
 
     /** @return array */
     abstract function provideTestLexing();
 
     /** @dataProvider provideTestLexing */
-    public function testLexing(array $lexerDefinition, array $inputsToExpectedOutputsMap) {
-        $lexer = $this->createLexer($lexerDefinition);
+    public function testLexing(array $lexerDefinition, $additionalModifiers, array $inputsToExpectedOutputsMap) {
+        $lexer = $this->createLexer($lexerDefinition, $additionalModifiers);
 
         foreach ($inputsToExpectedOutputsMap as $input => $expectedOutput) {
             $this->assertEquals($expectedOutput, $lexer->lex($input));
@@ -24,7 +24,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
     public function testLexingException(array $lexerDefinition, $input, $expectedExceptionMessage) {
         $this->setExpectedException('Phlexy\\LexingException', $expectedExceptionMessage);
 
-        $lexer = $this->createLexer($lexerDefinition);
+        $lexer = $this->createLexer($lexerDefinition, '');
 
         $lexer->lex($input);
     }
@@ -38,6 +38,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                     ','                              => 2,
                     '\r?\n'                          => 3,
                 ),
+                '', // no additional modifiers
                 array(
                     'Field,Another Field,"comma -> , <- comma","quote -> \" <- quote"' => array(
                         array(0, 1, 'Field'),
@@ -59,6 +60,23 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                     ),
                 )
             ),
+            array(
+                array(
+                    'foo' => 0,
+                ),
+                'i',
+                array(
+                    'foo' => array(
+                        array(0, 1, 'foo'),
+                    ),
+                    'FOO' => array(
+                        array(0, 1, 'FOO'),
+                    ),
+                    'fOo' => array(
+                        array(0, 1, 'fOo'),
+                    ),
+                )
+            ),
         );
     }
 
@@ -70,6 +88,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                     '\$(\w+)'      => 1,
                     '(\d+)\.(\d+)' => 2
                 ),
+                '', // no additional modifiers
                 array(
                     '$foo 3.141 $bar' => array(
                         array(1, 1, '$foo', array(1 => 'foo')),
@@ -85,6 +104,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                     'x'      => 0,
                     'a(y)?b' => 1,
                 ),
+                '', // no additional modifiers
                 array(
                     'xayb' => array(
                         array(0, 1, 'x'),
@@ -138,6 +158,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                             },
                         ),
                     ),
+                    '', // no additional modifiers
                     array(
                         'as' =>
                         array(
@@ -208,6 +229,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                             },
                         ),
                     ),
+                    '', // no additional modifiers
                     array(
                         'abcde' => array(
                             array(array(false, array('INITIAL')), 1, 'a'),
@@ -229,7 +251,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
 
             // for the capturing group tests the stateful output is different because
             // the capturing groups are not returned, so this has to be adjusted here
-            foreach ($test[1] as &$output) {
+            foreach ($test[2] as &$output) {
                 foreach ($output as &$token) {
                     $token = array_slice($token, 0, 3);
                 }

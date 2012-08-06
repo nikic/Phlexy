@@ -9,14 +9,14 @@ class UsingCompiledRegex implements \Phlexy\LexerFactory {
         $this->dataGen = $dataGen;
     }
 
-    public function createLexer(array $lexerDefinition) {
+    public function createLexer(array $lexerDefinition, $additionalModifiers = '') {
         $initialState = key($lexerDefinition);
 
         $stateData = array();
         foreach ($lexerDefinition as $state => $regexToActionMap) {
             $regexes = array_keys($regexToActionMap);
 
-            $compiledRegex = $this->dataGen->getCompiledRegex($regexes);
+            $compiledRegex = $this->dataGen->getCompiledRegex($regexes, $additionalModifiers);
             $offsetToLengthMap = $this->dataGen->getOffsetToLengthMap($regexes);
             $offsetToActionMap = array_combine(array_keys($offsetToLengthMap), $regexToActionMap);
 

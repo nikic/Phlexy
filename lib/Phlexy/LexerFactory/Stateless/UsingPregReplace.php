@@ -9,10 +9,10 @@ class UsingPregReplace implements \Phlexy\LexerFactory {
         $this->dataGen = $dataGen;
     }
 
-    public function createLexer(array $lexerDefinition) {
+    public function createLexer(array $lexerDefinition, $additionalModifiers = '') {
         $regexes = array_keys($lexerDefinition);
 
-        $compiledRegex = $this->dataGen->getCompiledRegexForPregReplace($regexes);
+        $compiledRegex = $this->dataGen->getCompiledRegexForPregReplace($regexes, $additionalModifiers);
         $offsetToLengthMap = $this->dataGen->getOffsetToLengthMap($regexes);
         $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), $lexerDefinition);
 

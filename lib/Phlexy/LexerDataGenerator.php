@@ -3,13 +3,13 @@
 namespace Phlexy;
 
 class LexerDataGenerator {
-    public function getCompiledRegex(array $regexes) {
-        return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A';
+    public function getCompiledRegex(array $regexes, $additionalModifiers = '') {
+        return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A' . $additionalModifiers;
     }
 
-    public function getCompiledRegexForPregReplace(array $regexes) {
+    public function getCompiledRegexForPregReplace(array $regexes, $additionalModifiers = '') {
         // the \G is not strictly necessary, but it makes preg_replace abort early when not lexable
-        return '~\G((' . str_replace('~', '\~', implode(')|(', $regexes)) . '))~';
+        return '~\G((' . str_replace('~', '\~', implode(')|(', $regexes)) . '))~' . $additionalModifiers;
     }
 
     public function getOffsetToLengthMap(array $regexes) {

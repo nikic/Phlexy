@@ -8,10 +8,10 @@ class WithoutCapturingGroupsTest extends \Phlexy\Lexer\TestAbstract {
     public function createLexer(array $regexToTokenMap) {
         $dataGenerator = new \Phlexy\LexerDataGenerator;
 
-        list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
+        list($compiledRegex, $offsetToTokenMap)
             = $dataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
 
-        return new WithoutCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
+        return new WithoutCapturingGroups($compiledRegex, $offsetToTokenMap);
     }
 
     public function provideTestLexing() {

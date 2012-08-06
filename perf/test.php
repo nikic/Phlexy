@@ -47,6 +47,7 @@ function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
     testLexingPerformance(new Stateless\Simple($regexToTokenMap), $string);
     testLexingPerformance(new Stateless\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
     testLexingPerformance(new Stateless\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
+    testLexingPerformance(new  Stateless\UsingPregReplace($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
 
     $lexer = generateLexer($regexToTokenMap);
     testLexingPerformance($lexer, $string);
@@ -129,8 +130,8 @@ function generateBinaryDispatchCode(Phlexy\CodeGenerator $codeGen, array $tokens
     } else if ($end - $start == 1) {
         return $codeGen->makeIf(
             '$action === ' . $start,
-            '$token = array(' . $codeGen->makeValue($tokens[$start]) . ', $line);',
-            '$token = array(' . $codeGen->makeValue($tokens[$end]) . ', $line);'
+            '$token = array(' . $codeGen->makeValue($tokens[$start]) . ', $line, $matches[0]);',
+            '$token = array(' . $codeGen->makeValue($tokens[$end]) . ', $line, $matches[0]);'
         );
     } else {
         $middle = $start + (int) ceil(($end - $start) / 2);

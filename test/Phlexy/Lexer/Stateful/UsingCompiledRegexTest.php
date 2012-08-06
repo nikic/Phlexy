@@ -7,12 +7,10 @@ use Phlexy\Lexer\Stateful;
 require_once __DIR__ . '/../TestAbstract.php';
 
 class UsingCompiledRegexTest extends \Phlexy\Lexer\TestAbstract{
-    public function createLexer(array $lexerDefinition, $additionalModifiers) {
-        $factory = new \Phlexy\LexerFactory\Stateful\UsingCompiledRegex(
+    public function createLexerFactory() {
+        return new \Phlexy\LexerFactory\Stateful\UsingCompiledRegex(
             new \Phlexy\LexerDataGenerator
         );
-
-        return $factory->createLexer($lexerDefinition, $additionalModifiers);
     }
 
     public function provideTestLexing() {

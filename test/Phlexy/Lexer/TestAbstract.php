@@ -5,15 +5,15 @@ namespace Phlexy\Lexer;
 use Phlexy\RestartException;
 
 abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
-    /** @return \Phlexy\Lexer */
-    abstract function createLexer(array $lexerDefinition, $additionalModifiers);
+    /** @return \Phlexy\LexerFactory */
+    abstract function createLexerFactory();
 
     /** @return array */
     abstract function provideTestLexing();
 
     /** @dataProvider provideTestLexing */
     public function testLexing(array $lexerDefinition, $additionalModifiers, array $inputsToExpectedOutputsMap) {
-        $lexer = $this->createLexer($lexerDefinition, $additionalModifiers);
+        $lexer = $this->createLexerFactory()->createLexer($lexerDefinition, $additionalModifiers);
 
         foreach ($inputsToExpectedOutputsMap as $input => $expectedOutput) {
             $this->assertEquals($expectedOutput, $lexer->lex($input));
@@ -24,7 +24,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
     public function testLexingException(array $lexerDefinition, $input, $expectedExceptionMessage) {
         $this->setExpectedException('Phlexy\\LexingException', $expectedExceptionMessage);
 
-        $lexer = $this->createLexer($lexerDefinition, '');
+        $lexer =  $this->createLexerFactory()->createLexer($lexerDefinition, '');
 
         $lexer->lex($input);
     }

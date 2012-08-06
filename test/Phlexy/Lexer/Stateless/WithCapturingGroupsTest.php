@@ -6,12 +6,11 @@ require_once __DIR__ . '/../TestAbstract.php';
 
 class WithCapturingGroupsTest extends \Phlexy\Lexer\TestAbstract {
     public function createLexer(array $regexToTokenMap) {
-        $dataGenerator = new \Phlexy\LexerDataGenerator;
+        $factory = new \Phlexy\LexerFactory\Stateless\WithCapturingGroups(
+            new \Phlexy\LexerDataGenerator
+        );
 
-        list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-            = $dataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
-
-        return new WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
+        return $factory->createLexer($regexToTokenMap);
     }
 
     public function provideTestLexing() {

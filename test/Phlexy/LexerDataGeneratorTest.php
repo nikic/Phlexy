@@ -66,29 +66,4 @@ class LexerDataGeneratorTest extends \PHPUnit_Framework_TestCase {
             ))
         );
     }
-
-    public function testGettingDataFromRegexToTokenMap() {
-        $dataGenerator = new LexerDataGenerator;
-
-        $this->assertEquals(
-            array(
-                '~(foo)|(b(a(a)a)r)|(baz)~A',
-                array(
-                    0 => 'tok1',
-                    1 => 'tok2',
-                    4 => 'tok3',
-                ),
-                array(
-                    0 => 1,
-                    1 => 3,
-                    4 => 1,
-                )
-            ),
-            $dataGenerator->getDataFromRegexToTokenMap(array(
-                'foo'       => 'tok1',
-                'b(a(a)a)r' => 'tok2',
-                'baz'       => 'tok3',
-            ))
-        );
-    }
 }

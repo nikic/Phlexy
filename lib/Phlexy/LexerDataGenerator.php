@@ -3,17 +3,6 @@
 namespace Phlexy;
 
 class LexerDataGenerator {
-    public function getDataFromRegexToTokenMap(array $regexToTokenMap) {
-        $regexes = array_keys($regexToTokenMap);
-        $tokens = array_values($regexToTokenMap);
-
-        $compiledRegex = $this->getCompiledRegex($regexes);
-        $offsetToLengthMap = $this->getOffsetToLengthMap($regexes);
-        $offsetToTokenMap = array_combine(array_keys($offsetToLengthMap), $tokens);
-
-        return array($compiledRegex, $offsetToTokenMap, $offsetToLengthMap);
-    }
-
     public function getCompiledRegex(array $regexes) {
         return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A';
     }

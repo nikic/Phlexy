@@ -39,18 +39,23 @@ echo 'Timing alphabet lexing of random string:', "\n";
 testPerformanceOfAllLexers($alphabetRegexes, $randomString);
 
 function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
+    $lexerTypes = array(
+        'Stateless\\Simple',
+        'Stateless\\WithCapturingGroups',
+        'Stateless\\WithoutCapturingGroups',
+        'Stateless\\UsingPregReplace',
+    );
+
     $dataGen = new \Phlexy\LexerDataGenerator;
 
-    list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-        = $dataGen->getDataFromRegexToTokenMap($regexToTokenMap);
+    foreach ($lexerTypes as $lexerType) {
+        $factoryName = 'Phlexy\\LexerFactory\\' . $lexerType;
+        $factory = new $factoryName($dataGen);
+        testLexingPerformance($factory->createLexer($regexToTokenMap), $string);
+    }
 
-    testLexingPerformance(new Stateless\Simple($regexToTokenMap), $string);
-    testLexingPerformance(new Stateless\WithCapturingGroups($compiledRegex, $offsetToTokenMap, $offsetToLengthMap), $string);
-    testLexingPerformance(new Stateless\WithoutCapturingGroups($compiledRegex, $offsetToTokenMap), $string);
-    testLexingPerformance(new  Stateless\UsingPregReplace($dataGen->getCompiledRegexForPregReplace(array_keys($regexToTokenMap)), $offsetToTokenMap, $offsetToLengthMap), $string);
-
-    $lexer = generateLexer($regexToTokenMap);
-    testLexingPerformance($lexer, $string);
+    //$lexer = generateLexer($regexToTokenMap);
+    //testLexingPerformance($lexer, $string);
 
     echo "\n";
 }

@@ -131,7 +131,7 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
 
                                 return T_STRING;
                             },
-                            '' => function(Stateful $lexer) {
+                            '.' => function(Stateful $lexer) {
                                 $lexer->popState();
 
                                 throw new RestartException;

@@ -249,6 +249,14 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
                 'baz',
                 'Unexpected character "b" on line 1'
             ),
+            array(
+                array(
+                    'foo' => 0,
+                    'bar' => 1,
+                ),
+                'foobazbar',
+                'Unexpected character "b" on line 1'
+            ),
         );
     }
 }

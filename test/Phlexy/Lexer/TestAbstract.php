@@ -81,41 +81,44 @@ abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
     }
 
     public function getTestsWithCapturingGroups() {
-        return array(
+        return array_merge(
+            $this->getTestsWithoutCapturingGroups(),
             array(
                 array(
-                    '\s+'          => 0,
-                    '\$(\w+)'      => 1,
-                    '(\d+)\.(\d+)' => 2
+                    array(
+                        '\s+'          => 0,
+                        '\$(\w+)'      => 1,
+                        '(\d+)\.(\d+)' => 2
+                    ),
+                    '', // no additional modifiers
+                    array(
+                        '$foo 3.141 $bar' => array(
+                            array(1, 1, '$foo', array(1 => 'foo')),
+                            array(0, 1, ' '),
+                            array(2, 1, '3.141', array(1 => '3', 2 => '141')),
+                            array(0, 1, ' '),
+                            array(1, 1, '$bar', array(1 => 'bar')),
+                        ),
+                    )
                 ),
-                '', // no additional modifiers
                 array(
-                    '$foo 3.141 $bar' => array(
-                        array(1, 1, '$foo', array(1 => 'foo')),
-                        array(0, 1, ' '),
-                        array(2, 1, '3.141', array(1 => '3', 2 => '141')),
-                        array(0, 1, ' '),
-                        array(1, 1, '$bar', array(1 => 'bar')),
+                    array(
+                        'x'      => 0,
+                        'a(y)?b' => 1,
                     ),
-                )
-            ),
-            array(
-                array(
-                    'x'      => 0,
-                    'a(y)?b' => 1,
+                    '', // no additional modifiers
+                    array(
+                        'xayb' => array(
+                            array(0, 1, 'x'),
+                            array(1, 1, 'ayb', array(1 => 'y')),
+                        ),
+                        'xab' => array(
+                            array(0, 1, 'x'),
+                            array(1, 1, 'ab'),
+                        ),
+                    )
                 ),
-                '', // no additional modifiers
-                array(
-                    'xayb' => array(
-                        array(0, 1, 'x'),
-                        array(1, 1, 'ayb', array(1 => 'y')),
-                    ),
-                    'xab' => array(
-                        array(0, 1, 'x'),
-                        array(1, 1, 'ab'),
-                    ),
-                )
-            ),
+            )
         );
     }
 

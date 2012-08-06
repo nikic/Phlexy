@@ -12,9 +12,6 @@ class UsingPregReplaceTest extends \Phlexy\Lexer\TestAbstract {
     }
 
     public function provideTestLexing() {
-        return array_merge(
-            $this->getTestsWithoutCapturingGroups(),
-            $this->getTestsWithCapturingGroups()
-        );
+        return $this->getTestsWithCapturingGroups();
     }
 }

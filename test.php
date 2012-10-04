@@ -276,7 +276,7 @@ $lexerData = array(
         // <ST_HEREDOC>{ANY_CHAR}
         // <ST_NOWDOC>{ANY_CHAR}
 
-        /* nowdox regex
+        /* nowdoc regex
          *
          * (*BSR_ANYCRLF)        # set \R to (?>\r\n|\r|\n)
          * (b?<<<[\t ]*\'(' . $labelRegex . ')\'\R) # opening token

@@ -1,13 +1,10 @@
 <?php
 
 use Phlexy\Lexer;
-use Phlexy\Lexer\Stateless;
 
 error_reporting(E_ALL | E_STRICT);
 
 require dirname(__FILE__) . '/../lib/Phlexy/bootstrap.php';
-
-if (php_sapi_name() != 'cli') echo '<pre>';
 
 $cvsRegexes = array(
     '[^",\r\n]+'                     => 0,
@@ -29,33 +26,51 @@ for ($i = 0; $i < 50000; ++$i) {
     $randomString .= $alphabet[mt_rand(0, count($alphabet) - 1)];
 }
 
-echo 'Timing lexing of CVS data:', "\n";
-testPerformanceOfAllLexers($cvsRegexes, $cvsData);
-echo 'Timing alphabet lexing of all "a":', "\n";
-testPerformanceOfAllLexers($alphabetRegexes, $allAString);
-echo 'Timing alphabet lexing of all "z":', "\n";
-testPerformanceOfAllLexers($alphabetRegexes, $allZString);
-echo 'Timing alphabet lexing of random string:', "\n";
-testPerformanceOfAllLexers($alphabetRegexes, $randomString);
+require __DIR__ . '/phpLexerDefinition.php';
+$phpLexerDefinition = getPHPLexerDefinition();
+$phpThisFile = file_get_contents(__FILE__);
+$phpTestAbstractFile = file_get_contents(__DIR__ . '/../test/Phlexy/Lexer/TestAbstract.php');
 
-function testPerformanceOfAllLexers(array $regexToTokenMap, $string) {
-    $lexerTypes = array(
+// Stateless
+echo 'Timing lexing of CVS data:', "\n";
+testPerformanceOfStatelessLexers($cvsData, $cvsRegexes);
+echo 'Timing alphabet lexing of all "a":', "\n";
+testPerformanceOfStatelessLexers($allAString, $alphabetRegexes);
+echo 'Timing alphabet lexing of all "z":', "\n";
+testPerformanceOfStatelessLexers($allZString, $alphabetRegexes);
+echo 'Timing alphabet lexing of random string:', " '',\n";
+testPerformanceOfStatelessLexers($randomString, $alphabetRegexes);
+
+// Stateful
+echo 'Timing PHP lexing of this file', "\n";
+testPerformanceOfStatefulLexers($phpThisFile, $phpLexerDefinition, 'i');
+echo 'Timing PHP lexing of larger TestAbstract file', "\n";
+testPerformanceOfStatefulLexers($phpTestAbstractFile, $phpLexerDefinition, 'i');
+
+function testPerformanceOfStatelessLexers($string, array $lexerDefinition, $additionalModifiers = '') {
+    testPerformanceOfLexers(array(
         'Stateless\\Simple',
         'Stateless\\WithCapturingGroups',
         'Stateless\\WithoutCapturingGroups',
         'Stateless\\UsingPregReplace',
-    );
+    ), $string, $lexerDefinition, $additionalModifiers);
+}
 
+function testPerformanceOfStatefulLexers($string, array $lexerDefinition, $additionalModifiers = '') {
+    testPerformanceOfLexers(array(
+        'Stateful\\Simple',
+        'Stateful\\UsingCompiledRegex',
+    ), $string, $lexerDefinition, $additionalModifiers);
+}
+
+function testPerformanceOfLexers(array $lexerTypes, $string, array $lexerDefinition, $additionalModifiers) {
     $dataGen = new \Phlexy\LexerDataGenerator;
 
     foreach ($lexerTypes as $lexerType) {
         $factoryName = 'Phlexy\\LexerFactory\\' . $lexerType;
         $factory = new $factoryName($dataGen);
-        testLexingPerformance($factory->createLexer($regexToTokenMap), $string);
+        testLexingPerformance($factory->createLexer($lexerDefinition, $additionalModifiers), $string);
     }
-
-    //$lexer = generateLexer($regexToTokenMap);
-    //testLexingPerformance($lexer, $string);
 
     echo "\n";
 }
@@ -66,85 +81,4 @@ function testLexingPerformance(Lexer $lexer, $string) {
     $endTime = microtime(true);
 
     echo 'Took ', $endTime - $startTime, ' seconds (', get_class($lexer), ')', "\n";
-}
-
-function generateLexer(array $regexToTokenMap) {
-    $codeGen = new Phlexy\CodeGenerator;
-    $dataGenerator = new Phlexy\LexerDataGenerator;
-
-    list($compiledRegex, $offsetToTokenMap, $offsetToLengthMap)
-        = $dataGenerator->getDataFromRegexToTokenMap($regexToTokenMap);
-
-    $offsets = array_keys($offsetToTokenMap);
-    $tokens = array_values($offsetToTokenMap);
-    $actions = range(0, count($regexToTokenMap) - 1);
-
-    $offsetToActionMap = array_combine($offsets, $actions);
-
-    $compiledRegexString = $codeGen->makeString($compiledRegex);
-    $offsetToActionMapArray = $codeGen->makeArray($offsetToActionMap);
-    $dispatchCode = $codeGen->indent(
-        generateBinaryDispatchCode($codeGen, $tokens, 0, count($tokens) - 1),
-        3
-    );
-
-    $name = 'GeneratedLexer_' . uniqid();
-
-    $code = <<<CODE
-class $name implements \Phlexy\Lexer {
-    protected \$compiledRegex = $compiledRegexString;
-    protected \$offsetToActionMap = $offsetToActionMapArray;
-
-    public function lex(\$string) {
-        \$tokens = array();
-
-        \$offset = 0;
-        \$line = 1;
-        while (isset(\$string[\$offset])) {
-            if (!preg_match(\$this->compiledRegex, \$string, \$matches, 0, \$offset)) {
-                throw new \Phlexy\LexingException(sprintf(
-                    'Unexpected character "%s" on line %d', \$string[\$offset], \$line
-                ));
-            }
-
-            // find the first non-empty element (but skipping \$matches[0]) using a quick for loop
-            for (\$i = 1; '' === \$matches[\$i]; ++\$i);
-
-            \$action = \$this->offsetToActionMap[\$i - 1];
-$dispatchCode
-
-            \$tokens[] = \$token;
-
-            \$offset += strlen(\$matches[0]);
-            \$line += substr_count("\n", \$matches[0]);
-        }
-
-        return \$tokens;
-    }
-}
-CODE;
-
-    eval($code);
-
-    return new $name;
-}
-
-function generateBinaryDispatchCode(Phlexy\CodeGenerator $codeGen, array $tokens, $start, $end) {
-    if ($end == $start) {
-        return '$token = array(' . $codeGen->makeValue($tokens[$start]) . ', $line);';
-    } else if ($end - $start == 1) {
-        return $codeGen->makeIf(
-            '$action === ' . $start,
-            '$token = array(' . $codeGen->makeValue($tokens[$start]) . ', $line, $matches[0]);',
-            '$token = array(' . $codeGen->makeValue($tokens[$end]) . ', $line, $matches[0]);'
-        );
-    } else {
-        $middle = $start + (int) ceil(($end - $start) / 2);
-
-        return $codeGen->makeIf(
-            '$action < ' . $middle,
-            generateBinaryDispatchCode($codeGen, $tokens, $start, $middle - 1),
-            generateBinaryDispatchCode($codeGen, $tokens, $middle, $end)
-        );
-    }
 }

@@ -26,7 +26,7 @@ $lexer = $factory->createLexer(array(
     '\r?\n'                          => 3,
 ));
 
-$tokens = $lexer->lex("hallo world,foo bar,more foo,more bar,"rare , escape",some more,stuff\n...");
+$tokens = $lexer->lex("hallo world,foo bar,more foo,more bar,\"rare , escape\",some more,stuff\n...");
 ```
 
 Similarly a stateful lexer:
@@ -103,5 +103,5 @@ The `preg_replace` trick makes the whole thing another bit faster. Sadly `preg_r
 lexers, at least I couldn't figure out a fast way to do the state transitions.
 
  [lexing_blog_post]: http://nikic.github.com/2011/10/23/Improving-lexing-performance-in-PHP.html
- [php_lexer_definition]: http://github.com/
- [performance_test_file]: http://github.com/
+ [php_lexer_definition]: https://github.com/nikic/Phlexy/blob/master/examples/phpLexerDefinition.php
+ [performance_test_file]: https://github.com/nikic/Phlexy/blob/master/examples/performanceTests.php

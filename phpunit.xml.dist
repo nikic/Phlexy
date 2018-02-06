@@ -19,6 +19,9 @@
     <filter>
         <whitelist>
             <directory suffix=".php">./lib/Phlexy/</directory>
+            <exclude>
+                <file>./lib/Phlexy/bootstrap.php</file>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>

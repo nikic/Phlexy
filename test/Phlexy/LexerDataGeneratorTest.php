@@ -2,7 +2,9 @@
 
 namespace Phlexy;
 
-class LexerDataGeneratorTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class LexerDataGeneratorTest extends TestCase {
     public function testRegexCompilation() {
         $dataGenerator = new LexerDataGenerator;
 

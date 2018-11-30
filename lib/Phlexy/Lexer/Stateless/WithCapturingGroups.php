@@ -6,11 +6,19 @@ class WithCapturingGroups implements \Phlexy\Lexer {
     protected $compiledRegex;
     protected $offsetToTokenMap;
     protected $offsetToLengthMap;
+    private $preferNamedGroups;
 
-    public function __construct($compiledRegex, array $offsetToTokenMap, array $offsetToLengthMap) {
+    /**
+     * @param string $compiledRegex
+     * @param array $offsetToTokenMap
+     * @param array $offsetToLengthMap
+     * @param bool $preferNamedGroups
+     */
+    public function __construct($compiledRegex, array $offsetToTokenMap, array $offsetToLengthMap, $preferNamedGroups = false) {
         $this->compiledRegex = $compiledRegex;
         $this->offsetToTokenMap = $offsetToTokenMap;
         $this->offsetToLengthMap = $offsetToLengthMap;
+        $this->preferNamedGroups = $preferNamedGroups;
     }
 
     public function lex($string) {
@@ -32,6 +40,20 @@ class WithCapturingGroups implements \Phlexy\Lexer {
             for ($j = 1, $length = $this->offsetToLengthMap[$i - 1]; $j < $length; ++$j) {
                 if (isset($matches[$i + $j])) {
                     $realMatches[$j] = $matches[$i + $j];
+
+                    if ($this->preferNamedGroups) {
+                        while (($key = key($matches)) !== $i + $j && $key !== false) {
+                            next($matches);
+                        }
+
+                        prev($matches);
+
+                        // remove corresponding indexed group
+                        if (is_string($k = key($matches))) {
+                            $realMatches[$k] = $realMatches[$j];
+                            unset($realMatches[$j]);
+                        }
+                    }
                 }
             }
 

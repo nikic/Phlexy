@@ -3,8 +3,9 @@
 namespace Phlexy\Lexer;
 
 use Phlexy\RestartException;
+use PHPUnit\Framework\TestCase;
 
-abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
+abstract class TestAbstract extends TestCase {
     /** @return \Phlexy\LexerFactory */
     abstract function createLexerFactory();
 

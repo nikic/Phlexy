@@ -10,12 +10,9 @@ class UsingCompiledRegex extends Stateful {
     }
 
     public function lex(string $string): array {
+        $this->initStateStack();
+
         $tokens = array();
-
-        $this->stateStack = array($this->initialState);
-        $this->currentStackPosition = 0;
-        $this->currentStateData = $this->stateData[$this->initialState];
-
         $offset = 0;
         $line = 1;
         while (isset($string[$offset])) {

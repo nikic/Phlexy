@@ -36,4 +36,10 @@ abstract class Stateful implements \Phlexy\Lexer {
     public function getStateStack(): array {
         return array_slice($this->stateStack, 0, $this->currentStackPosition + 1);
     }
+
+    protected function initStateStack() {
+        $this->stateStack = array($this->initialState);
+        $this->currentStackPosition = 0;
+        $this->currentStateData = $this->stateData[$this->initialState];
+    }
 }

@@ -13,7 +13,7 @@ For example, if you want to create a MARK based stateless CSV lexer, you can use
 
 ```php
 <?php
-require 'path/to/lib/Phlexy/bootstrap.php';
+require 'path/to/vendor/autoload.php';
 
 $factory = new Phlexy\LexerFactory\Stateless\UsingMarks(
     new Phlexy\LexerDataGenerator
@@ -35,7 +35,7 @@ Similarly a stateful lexer:
 <?php
 require 'path/to/lib/Phlexy/bootstrap.php';
 
-$factory = new Phlexy\LexerFactory\Stateful\UsingCompiledRegex(
+$factory = new Phlexy\LexerFactory\Stateful\UsingMarks(
     new Phlexy\LexerDataGenerator
 );
 
@@ -102,13 +102,9 @@ regex approach described in the blog post mentioned above.
 `Stateless\UsingPregReplace` is an extension of the compiled regex approach, where the looping through the regular
 expression is done by (mis)using `preg_replace_callback`.
 
-As the above performance measurments show, the `Simple` approach is a good bit slower than using compiled regexes. For
-the CVS data it's only 1.17 times faster, but the difference significantly increases the more regular expressions there
-are. E.g. lexing of the alphabet on a random string is more than twice as fast. For lexing PHP the compiled approach
-is five times as fast.
+`Stateless\UsingMarks` and `Stateful\UsingMark` use the `(*MARK)` mechanism that was exposed in PHP 5.5.
 
-The `preg_replace` trick makes the whole thing another bit faster. Sadly `preg_replace` can't be used for stateful
-lexers, at least I couldn't figure out a fast way to do the state transitions.
+As the above performance measurments show, the `Simple` approach is a good bit slower than using a compiled regex approach. Mark based implementation perform much better than group offset based ones. The benefits increase with lexer size: For the CSV lexer there is relatively little difference, while for the PHP lexer the mark based implementation is 25x faster than the naive one.
 
  [lexing_blog_post]: http://nikic.github.com/2011/10/23/Improving-lexing-performance-in-PHP.html
  [php_lexer_definition]: https://github.com/nikic/Phlexy/blob/master/examples/phpLexerDefinition.php

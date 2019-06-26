@@ -4,12 +4,32 @@ namespace Phlexy;
 
 class LexerDataGenerator {
     public function getCompiledRegex(array $regexes, string $additionalModifiers = ''): string {
-        return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A' . $additionalModifiers;
+        return '~(' . $this->escapeDelimiter(implode(')|(', $regexes)) . ')~A' . $additionalModifiers;
     }
 
     public function getCompiledRegexForPregReplace(array $regexes, string $additionalModifiers = ''): string {
         // the \G is not strictly necessary, but it makes preg_replace abort early when not lexable
-        return '~\G((' . str_replace('~', '\~', implode(')|(', $regexes)) . '))~' . $additionalModifiers;
+        return '~\G((' . $this->escapeDelimiter(implode(')|(', $regexes)) . '))~' . $additionalModifiers;
+    }
+
+    public function getMarks(int $num): array {
+        $marks = [];
+        $mark = 'A';
+        for ($i = 0; $i < $num; $i++) {
+            $marks[] = $mark++;
+        }
+        return $marks;
+    }
+
+    public function getCompiledRegexWithMarks(array $regexes, array $marks, string $additionalModifiers = ''): string {
+        $regexParts = array_map(function($regex, $mark) {
+            return $regex . '(*MARK:' . $mark . ')';
+        }, $regexes, $marks);
+        return '~(?|' . $this->escapeDelimiter(implode('|', $regexParts)) . ')~A' . $additionalModifiers;
+    }
+
+    private function escapeDelimiter(string $regex): string {
+        return str_replace('~', '\~', $regex);
     }
 
     public function getOffsetToLengthMap(array $regexes): array {

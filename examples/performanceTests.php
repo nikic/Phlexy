@@ -1,47 +1,46 @@
 <?php
 
-/*
- * Sample output for this file:
- *
- * $ /c/php-5.4.1/php examples/performanceTests.php
- * Timing lexing of CVS data:
- * Took 0.33259892463684 seconds (Phlexy\Lexer\Stateless\Simple)
- * Took 0.28691792488098 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
- * Took 0.26784682273865 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
- * Took 0.22256088256836 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
- *
- * Timing alphabet lexing of all "a":
- * Took 0.30809283256531 seconds (Phlexy\Lexer\Stateless\Simple)
- * Took 0.40949702262878 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
- * Took 0.38628792762756 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
- * Took 0.31351900100708 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
- *
- * Timing alphabet lexing of all "z":
- * Took 0.62087893486023 seconds (Phlexy\Lexer\Stateless\Simple)
- * Took 0.23668503761292 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
- * Took 0.22538208961487 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
- * Took 0.18682312965393 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
- *
- * Timing alphabet lexing of random string:
- * Took 0.94398212432861 seconds (Phlexy\Lexer\Stateless\Simple)
- * Took 0.42041087150574 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
- * Took 0.40309715270996 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
- * Took 0.37058591842651 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
- *
- * Timing PHP lexing of this file:
- * Took 0.098251104354858 seconds (Phlexy\Lexer\Stateful\Simple)
- * Took 0.020735025405884 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
- *
- * Timing PHP lexing of larger TestAbstract file:
- * Took 0.268701076507570 seconds (Phlexy\Lexer\Stateful\Simple)
- * Took 0.065788984298706 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
- */
+/* Sample output for this file (PHP 7.2):
+
+Timing lexing of CVS data:
+Took 0.54317283630371 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.52546691894531 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.47881102561951 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.56563687324524 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+
+Timing alphabet lexing of all "a":
+Took 0.57232809066772 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.75582599639893 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.71053194999695 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.77658700942993 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+
+Timing alphabet lexing of all "z":
+Took 0.79460787773132 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.30368900299072 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.28874707221985 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.37151384353638 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+
+Timing alphabet lexing of random string:
+Took 1.1753499507904 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.59115791320801 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.55604815483093 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.68863797187805 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+
+Timing PHP lexing of this file:
+Took 0.14126992225647 seconds (Phlexy\Lexer\Stateful\Simple)
+Took 0.025708198547363 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
+
+Timing PHP lexing of larger TestAbstract file:
+Took 0.45643091201782 seconds (Phlexy\Lexer\Stateful\Simple)
+Took 0.080940961837769 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
+
+*/
 
 use Phlexy\Lexer;
 
 error_reporting(E_ALL | E_STRICT);
 
-require dirname(__FILE__) . '/../lib/Phlexy/bootstrap.php';
+require __DIR__ . '/../lib/Phlexy/bootstrap.php';
 
 /*
  * Lexer definitions
@@ -114,6 +113,7 @@ function testPerformanceOfLexers(array $lexerTypes, $string, array $lexerDefinit
 
     foreach ($lexerTypes as $lexerType) {
         $factoryName = 'Phlexy\\LexerFactory\\' . $lexerType;
+        /** @var \Phlexy\LexerFactory $factory */
         $factory = new $factoryName($dataGen);
         testLexingPerformance($factory->createLexer($lexerDefinition, $additionalModifiers), $string);
     }
@@ -122,8 +122,11 @@ function testPerformanceOfLexers(array $lexerTypes, $string, array $lexerDefinit
 }
 
 function testLexingPerformance(Lexer $lexer, $string) {
+    $runs = 10;
     $startTime = microtime(true);
-    $lexer->lex($string);
+    for ($i = 0; $i < $runs; $i++) {
+        $lexer->lex($string);
+    }
     $endTime = microtime(true);
 
     echo 'Took ', $endTime - $startTime, ' seconds (', get_class($lexer), ')', "\n";

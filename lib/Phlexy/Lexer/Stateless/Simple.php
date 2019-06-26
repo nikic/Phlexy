@@ -5,7 +5,7 @@ namespace Phlexy\Lexer\Stateless;
 class Simple implements \Phlexy\Lexer {
     protected $regexToToken;
 
-    public function __construct(array $regexToToken, $additionalModifiers = 'i') {
+    public function __construct(array $regexToToken, string $additionalModifiers = 'i') {
         $this->regexToToken = array();
         foreach ($regexToToken as $regex => $token) {
             $regex = '~' . str_replace('~', '\~', $regex) . '~A' . $additionalModifiers;
@@ -13,7 +13,7 @@ class Simple implements \Phlexy\Lexer {
         }
     }
 
-    public function lex($string) {
+    public function lex(string $string): array {
         $tokens = array();
 
         $offset = 0;

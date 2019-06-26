@@ -3,16 +3,16 @@
 namespace Phlexy;
 
 class LexerDataGenerator {
-    public function getCompiledRegex(array $regexes, $additionalModifiers = '') {
+    public function getCompiledRegex(array $regexes, string $additionalModifiers = ''): string {
         return '~(' . str_replace('~', '\~', implode(')|(', $regexes)) . ')~A' . $additionalModifiers;
     }
 
-    public function getCompiledRegexForPregReplace(array $regexes, $additionalModifiers = '') {
+    public function getCompiledRegexForPregReplace(array $regexes, string $additionalModifiers = ''): string {
         // the \G is not strictly necessary, but it makes preg_replace abort early when not lexable
         return '~\G((' . str_replace('~', '\~', implode(')|(', $regexes)) . '))~' . $additionalModifiers;
     }
 
-    public function getOffsetToLengthMap(array $regexes) {
+    public function getOffsetToLengthMap(array $regexes): array {
         $offsetToLengthMap = array();
 
         $currentOffset = 0;
@@ -27,7 +27,7 @@ class LexerDataGenerator {
         return $offsetToLengthMap;
     }
 
-    protected function getNumberOfCapturingGroupsInRegex($regex) {
+    protected function getNumberOfCapturingGroupsInRegex($regex): int {
         // The regex to count the number of capturing groups should be fairly complete. The only thing I know it
         // won't work with are (?| ... ) groups.
         return preg_match_all(

@@ -3,5 +3,5 @@
 namespace Phlexy;
 
 interface Lexer {
-    public function lex($string);
+    public function lex(string $string): array;
 }

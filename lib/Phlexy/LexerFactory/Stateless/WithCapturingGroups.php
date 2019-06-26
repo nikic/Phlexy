@@ -2,6 +2,8 @@
 
 namespace Phlexy\LexerFactory\Stateless;
 
+use Phlexy\Lexer;
+
 class WithCapturingGroups implements \Phlexy\LexerFactory {
     protected $dataGen;
 
@@ -9,7 +11,7 @@ class WithCapturingGroups implements \Phlexy\LexerFactory {
         $this->dataGen = $dataGen;
     }
 
-    public function createLexer(array $lexerDefinition, $additionalModifiers = '') {
+    public function createLexer(array $lexerDefinition, string $additionalModifiers = ''): Lexer {
         $regexes = array_keys($lexerDefinition);
 
         $compiledRegex = $this->dataGen->getCompiledRegex($regexes, $additionalModifiers);

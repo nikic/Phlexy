@@ -17,30 +17,30 @@ class Simple implements \Phlexy\Lexer\Stateful {
         $this->additionalModifiers = $additionalModifiers;
     }
 
-    public function pushState($state) {
+    public function pushState($state): void {
         $this->stateStack[++$this->currentStackPosition] = $state;
         $this->currentStateData = $this->stateData[$state];
     }
 
-    public function popState() {
+    public function popState(): void {
         $state = $this->stateStack[--$this->currentStackPosition];
         $this->currentStateData = $this->stateData[$state];
     }
 
-    public function swapState($state) {
+    public function swapState($state): void {
         $this->stateStack[$this->currentStackPosition] = $state;
         $this->currentStateData = $this->stateData[$state];
     }
 
-    public function hasPushedStates() {
+    public function hasPushedStates(): bool {
         return $this->currentStackPosition > 0;
     }
 
-    public function getStateStack() {
+    public function getStateStack(): array {
         return array_slice($this->stateStack, 0, $this->currentStackPosition + 1);
     }
 
-    public function lex($string) {
+    public function lex(string $string): array {
         $tokens = array();
 
         $this->stateStack = array($this->initialState);

@@ -2,6 +2,7 @@
 
 namespace Phlexy\Lexer;
 
+use Phlexy\LexingException;
 use Phlexy\RestartException;
 use PHPUnit\Framework\TestCase;
 
@@ -23,9 +24,10 @@ abstract class TestAbstract extends TestCase {
 
     /** @dataProvider provideTestLexingException */
     public function testLexingException(array $lexerDefinition, $input, $expectedExceptionMessage) {
-        $this->setExpectedException('Phlexy\\LexingException', $expectedExceptionMessage);
+        $this->expectException(LexingException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $lexer =  $this->createLexerFactory()->createLexer($lexerDefinition, '');
+        $lexer = $this->createLexerFactory()->createLexer($lexerDefinition, '');
 
         $lexer->lex($input);
     }

@@ -123,6 +123,7 @@ function getPHPLexerDefinition() {
             'exit\b'            => T_EXIT,
             'extends\b'         => T_EXTENDS,
             'final\b'           => T_FINAL,
+            'finally\b'         => T_FINALLY,
             'for\b'             => T_FOR,
             'foreach\b'         => T_FOREACH,
             'function\b'        => T_FUNCTION,
@@ -157,6 +158,8 @@ function getPHPLexerDefinition() {
             'var\b'             => T_VAR,
             'while\b'           => T_WHILE,
             'xor\b'             => T_LOGICAL_XOR,
+            'yield[ \t\r\n]+from\b' => T_YIELD_FROM,
+            'yield\b'           => T_YIELD,
 
             // casts
             '\([ \t]*array[ \t]*\)'                 => T_ARRAY_CAST,
@@ -168,6 +171,7 @@ function getPHPLexerDefinition() {
             '\([ \t]*unset[ \t]*\)'                 => T_UNSET_CAST,
 
             // comparison operators
+            '<=>'  => T_SPACESHIP,
             '===' => T_IS_IDENTICAL,
             '!==' => T_IS_NOT_IDENTICAL,
             '=='  => T_IS_EQUAL,
@@ -188,6 +192,7 @@ function getPHPLexerDefinition() {
             '\^=' => T_XOR_EQUAL,
             '<<=' => T_SL_EQUAL,
             '>>=' => T_SR_EQUAL,
+            '\*\*=' => T_POW_EQUAL,
 
             // other operators
             '=>'   => T_DOUBLE_ARROW,
@@ -199,6 +204,9 @@ function getPHPLexerDefinition() {
             '>>'   => T_SR,
             '--'   => T_DEC,
             '\+\+' => T_INC,
+            '\*\*' => T_POW,
+            '\?\?' => T_COALESCE,
+            '\.\.\.' => T_ELLIPSIS,
 
             // number literals (order of rules is important)
             '(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:e[+-]?[0-9]+)?' => T_DNUMBER,
@@ -215,7 +223,7 @@ function getPHPLexerDefinition() {
                 return is_int(octdec($num)) ? T_LNUMBER : T_DNUMBER;
             },
             $decNumberRegex => function(Stateful $lexer, $matches) {
-                return $matches[0] <= PHP_INT_MAX ? T_LNUMBER : T_DNUMBER;
+                return is_int(+$matches[0]) ? T_LNUMBER : T_DNUMBER;
             },
 
             // comments

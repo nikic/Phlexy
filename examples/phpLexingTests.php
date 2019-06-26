@@ -135,7 +135,7 @@ class PhpTestFileFilterIterator extends FilterIterator {
         $fileName = $this->current();
         return preg_match('~\.phpt$~', $fileName)
             // the two bug tests are incorrectly lexed on php's side
-            && !preg_match('~zend_multibyte|multibyte_encoding|bug21820|bug61681~', $fileName);
+            && !preg_match('~zend_multibyte|multibyte_encoding|bug21820|bug61681|bug65545~', $fileName);
     }
 }
 

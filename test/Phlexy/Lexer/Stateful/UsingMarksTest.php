@@ -2,11 +2,13 @@
 
 namespace Phlexy\Lexer\Stateful;
 
+use Phlexy\Lexer\Stateful;
+
 require_once __DIR__ . '/../TestAbstract.php';
 
-class UsingCompiledRegexTest extends \Phlexy\Lexer\TestAbstract{
+class UsingMarksTest extends \Phlexy\Lexer\TestAbstract{
     public function createLexerFactory() {
-        return new \Phlexy\LexerFactory\Stateful\UsingCompiledRegex(
+        return new \Phlexy\LexerFactory\Stateful\UsingMarks(
             new \Phlexy\LexerDataGenerator
         );
     }

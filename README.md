@@ -56,42 +56,43 @@ script][performance_test_file]:
 $ php-7.2 examples/performanceTests.php
 
 Timing lexing of CVS data:
-Took 0.53451085090637 seconds (Phlexy\Lexer\Stateless\Simple)
-Took 0.5123028755188 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
-Took 0.47754406929016 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
-Took 0.56304383277893 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
-Took 0.45579981803894 seconds (Phlexy\Lexer\Stateless\UsingMarks)
+Took 0.55736708641052 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.526859998703 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.49272608757019 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.5570011138916 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+Took 0.46333193778992 seconds (Phlexy\Lexer\Stateless\UsingMarks)
 
 Timing alphabet lexing of all "a":
-Took 0.56700110435486 seconds (Phlexy\Lexer\Stateless\Simple)
-Took 0.73676705360413 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
-Took 0.68615889549255 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
-Took 0.74947309494019 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
-Took 0.62207102775574 seconds (Phlexy\Lexer\Stateless\UsingMarks)
+Took 0.58650183677673 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.754310131073 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.70682787895203 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.76406478881836 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+Took 0.62837815284729 seconds (Phlexy\Lexer\Stateless\UsingMarks)
 
 Timing alphabet lexing of all "z":
-Took 0.78618907928467 seconds (Phlexy\Lexer\Stateless\Simple)
-Took 0.29536390304565 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
-Took 0.2872040271759 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
-Took 0.35811686515808 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
-Took 0.12243986129761 seconds (Phlexy\Lexer\Stateless\UsingMarks)
+Took 0.79967403411865 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.30202317237854 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.29198718070984 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.36609601974487 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+Took 0.12433409690857 seconds (Phlexy\Lexer\Stateless\UsingMarks)
 
 Timing alphabet lexing of random string:
-Took 1.1390540599823 seconds (Phlexy\Lexer\Stateless\Simple)
-Took 0.579421043396 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
-Took 0.54870915412903 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
-Took 0.67329716682434 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
-Took 0.32394981384277 seconds (Phlexy\Lexer\Stateless\UsingMarks)
+Took 1.1720998287201 seconds (Phlexy\Lexer\Stateless\Simple)
+Took 0.5946900844574 seconds (Phlexy\Lexer\Stateless\WithCapturingGroups)
+Took 0.55696296691895 seconds (Phlexy\Lexer\Stateless\WithoutCapturingGroups)
+Took 0.6708779335022 seconds (Phlexy\Lexer\Stateless\UsingPregReplace)
+Took 0.33155107498169 seconds (Phlexy\Lexer\Stateless\UsingMarks)
 
 Timing PHP lexing of this file:
-Took 0.15059280395508 seconds (Phlexy\Lexer\Stateful\Simple)
-Took 0.025473117828369 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
+Took 0.151211977005 seconds (Phlexy\Lexer\Stateful\Simple)
+Took 0.025480031967163 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
+Took 0.007037878036499 seconds (Phlexy\Lexer\Stateful\UsingMarks)
 
 Timing PHP lexing of larger TestAbstract file:
-Took 0.45711994171143 seconds (Phlexy\Lexer\Stateful\Simple)
-Took 0.082152843475342 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
+Took 0.49794602394104 seconds (Phlexy\Lexer\Stateful\Simple)
+Took 0.083348035812378 seconds (Phlexy\Lexer\Stateful\UsingCompiledRegex)
+Took 0.019592046737671 seconds (Phlexy\Lexer\Stateful\UsingMarks)
 ```
-
 
 `Stateless\Simple` and `Stateful\Simple` are trivial lexer implementations (which loop through the regular expressions).
 

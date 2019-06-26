@@ -23,7 +23,7 @@ class LexerDataGenerator {
 
     public function getCompiledRegexWithMarks(array $regexes, array $marks, string $additionalModifiers = ''): string {
         $regexParts = array_map(function($regex, $mark) {
-            return $regex . '(*MARK:' . $mark . ')';
+            return '(?:' . $regex . ')(*MARK:' . $mark . ')';
         }, $regexes, $marks);
         return '~(?|' . $this->escapeDelimiter(implode('|', $regexParts)) . ')~A' . $additionalModifiers;
     }

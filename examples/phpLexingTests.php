@@ -36,7 +36,7 @@ if ($testType === 'php-src-tests') {
     showHelp('Invalid test type.');
 }
 
-$factory = new \Phlexy\LexerFactory\Stateful\UsingCompiledRegex(
+$factory = new \Phlexy\LexerFactory\Stateful\UsingMarks(
     new \Phlexy\LexerDataGenerator
 );
 
@@ -81,15 +81,14 @@ echo 'Lexer took: ', $myTime, " seconds.\n";
 echo 'token_get_all took: ', $phpTime, " seconds.\n";
 
 function showHelp($error) {
-    die($error . "\n\n" .
-        <<<OUTPUT
+    $help = <<<OUTPUT
 This script has to be called with the following signature:
 
     php phpLexingTests.php testType pathToTestFiles
 
 The test type can be either "php-src-tests" or "code".
-OUTPUT
-    );
+OUTPUT;
+    die($error . "\n\n" . $help . "\n");
 }
 
 function convertLexToPHPFormat(array $myLex) {

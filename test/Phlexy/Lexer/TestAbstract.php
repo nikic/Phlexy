@@ -80,6 +80,20 @@ abstract class TestAbstract extends TestCase {
                     ),
                 )
             ),
+            array(
+                array(
+                    'foo|bar' => 0,
+                ),
+                '',
+                array(
+                    'foo' => array(
+                        array(0, 1, 'foo'),
+                    ),
+                    'bar' => array(
+                        array(0, 1, 'bar'),
+                    ),
+                )
+            ),
         );
     }
 

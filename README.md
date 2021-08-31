@@ -4,6 +4,15 @@ Phlexy
 This project is a followup to [my post on fast lexing in PHP][lexing_blog_post]. It contains a few lexer implementations
 (both stateless and stateful) and related performance tests.
 
+Install
+-------
+
+To install with composer:
+
+```sh
+composer require nikic/phlexy
+```
+
 Usage
 -----
 
